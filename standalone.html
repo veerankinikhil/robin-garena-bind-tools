@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BindTools Cyber Suite — Free Fire Security Command Center</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #030712;
+      --bg-card: #081022;
+      --bg-input: #030712;
+
+      --accent-cyan: #00f2fe;
+      --accent-neon-green: #00ff66;
+      --accent-blue: #3b82f6;
+      --accent-purple: #9d4edd;
+      --accent-pink: #f72585;
+      --accent-amber: #ff9e00;
+      --accent-red: #ff0055;
+
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #475569;
+
+      --border-glass: rgba(0, 242, 254, 0.25);
+      --border-focus: #00f2fe;
+
+      --glow-cyan: 0 0 25px rgba(0, 242, 254, 0.35);
+      --glow-purple: 0 0 25px rgba(157, 78, 221, 0.35);
+      --glow-green: 0 0 20px rgba(0, 255, 102, 0.35);
+
+      --radius-lg: 16px;
+      --radius-md: 10px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: #060c1a;
+      border-bottom: 1px solid var(--border-glass);
+      padding: 1rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.8);
+    }
+
+    .logo-box {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .logo-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #030712;
+      font-size: 1.5rem;
+      font-weight: 900;
+      box-shadow: var(--glow-cyan);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .status-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: rgba(0, 255, 102, 0.08);
+      border: 1px solid rgba(0, 255, 102, 0.3);
+      padding: 0.45rem 1rem;
+      border-radius: 30px;
+      font-size: 0.85rem;
+      color: var(--accent-neon-green);
+      font-family: 'Share Tech Mono', monospace;
+      letter-spacing: 0.5px;
+      box-shadow: var(--glow-green);
+    }
+
+    main {
+      max-width: 1320px;
+      width: 100%;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 1.75rem;
+    }
+
+    nav {
+      display: flex;
+      gap: 0.5rem;
+      overflow-x: auto;
+      padding-bottom: 0.6rem;
+      border-bottom: 1px solid var(--border-glass);
+    }
+
+    .tab-btn {
+      background: #081022;
+      border: 1px solid var(--border-glass);
+      color: var(--text-secondary);
+      padding: 0.7rem 1.2rem;
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      white-space: nowrap;
+      transition: all 0.25s ease;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .tab-btn:hover {
+      background: rgba(0, 242, 254, 0.12);
+      border-color: var(--accent-cyan);
+      color: #fff;
+      transform: translateY(-1px);
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, rgba(0, 242, 254, 0.25), rgba(157, 78, 221, 0.25));
+      border-color: var(--accent-cyan);
+      color: #fff;
+      box-shadow: var(--glow-cyan);
+    }
+
+    .grid-container {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 2rem;
+    }
+
+    @media (max-width: 950px) {
+      .grid-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .glass-card {
+      background: #081022;
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-lg);
+      padding: 1.85rem;
+      box-shadow: 0 12px 45px rgba(0, 0, 0, 0.9);
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .glass-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple), transparent);
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    label {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      font-family: 'Share Tech Mono', monospace;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      background: #030712;
+      border: 1px solid rgba(0, 242, 254, 0.25);
+      border-radius: var(--radius-md);
+      padding: 0.9rem 1.15rem;
+      color: var(--text-primary);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.92rem;
+      outline: none;
+      transition: all 0.25s ease;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 20px rgba(0, 242, 254, 0.4);
+      background: #050b18;
+    }
+
+    .btn-gradient {
+      background: linear-gradient(135deg, var(--accent-cyan), #00c6ff);
+      color: #030712;
+      font-weight: 800;
+      border: none;
+      border-radius: var(--radius-md);
+      padding: 0.95rem 1.75rem;
+      font-size: 0.95rem;
+      font-family: 'Outfit', sans-serif;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.65rem;
+      transition: all 0.25s ease;
+      box-shadow: var(--glow-cyan);
+    }
+
+    .btn-gradient:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 35px rgba(0, 242, 254, 0.5);
+      background: linear-gradient(135deg, #00ffcc, var(--accent-cyan));
+    }
+
+    .btn-outline {
+      background: rgba(0, 242, 254, 0.08);
+      border: 1px solid var(--border-glass);
+      color: var(--text-primary);
+      font-weight: 600;
+      border-radius: var(--radius-md);
+      padding: 0.55rem 1rem;
+      font-size: 0.85rem;
+      font-family: 'Share Tech Mono', monospace;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      transition: all 0.25s ease;
+    }
+
+    .btn-outline:hover {
+      background: rgba(0, 242, 254, 0.2);
+      border-color: var(--accent-cyan);
+      box-shadow: var(--glow-cyan);
+    }
+
+    .code-viewer {
+      font-family: 'JetBrains Mono', monospace;
+      background: #02050e;
+      border: 1px solid rgba(0, 242, 254, 0.3);
+      border-radius: var(--radius-md);
+      padding: 1.35rem;
+      color: #00ffcc;
+      font-size: 0.88rem;
+      line-height: 1.65;
+      max-height: 450px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+      box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.95);
+    }
+
+    #matrix-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -1;
+      pointer-events: none;
+      opacity: 0.25;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      background: #060c1a;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      font-family: 'Share Tech Mono', monospace;
+      border-top: 1px solid var(--border-glass);
+      margin-top: auto;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="matrix-canvas"></canvas>
+
+  <header>
+    <div class="logo-box">
+      <div class="logo-icon">🛡️</div>
+      <div>
+        <h1 style="font-size: 1.35rem; font-weight: 900; background: linear-gradient(to right, #fff, var(--accent-cyan), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-family: 'Outfit', sans-serif;">
+          GARENA BIND TOOLS
+        </h1>
+        <p style="font-size: 0.85rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-weight: 700;">Telegram Admin: @Robin444s</p>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <nav>
+      <button class="tab-btn active" onclick="switchTab('cancelbind')">🔓 Cancel Bind (Requires API Key)</button>
+      <button class="tab-btn" onclick="switchTab('singleunsub')">📧 Single Unsubscribe</button>
+      <button class="tab-btn" onclick="switchTab('doubleunsub')">📧 Double Unsubscribe</button>
+      <button class="tab-btn" onclick="switchTab('changebind')">🔄 Change Bind (5 Steps)</button>
+      <button class="tab-btn" onclick="switchTab('unbind')">❌ Unbind Email (3 Steps)</button>
+      <button class="tab-btn" onclick="switchTab('addbind')">➕ Add Bind (3 Steps)</button>
+      <button class="tab-btn" onclick="switchTab('bindinfo')">ℹ️ Bind Info</button>
+      <button class="tab-btn" onclick="switchTab('platforms')">📱 Platform Info</button>
+      <button class="tab-btn" onclick="switchTab('revoke')">🚫 Revoke Token</button>
+      <button class="tab-btn" onclick="switchTab('player')">👤 Player Info</button>
+      <button class="tab-btn" onclick="switchTab('bancheck')">🛡️ Ban Check</button>
+    </nav>
+
+    <div class="grid-container">
+      <!-- Left Panel -->
+      <div class="glass-card">
+
+        <!-- 1. CANCEL BIND -->
+        <div id="tab-cancelbind">
+          <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--accent-cyan); margin-bottom: 0.4rem;">🔓 Cancel Account Bind</h2>
+          <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 1.25rem;">
+            Cancel pending Garena bind request using <code>access_token</code> & API Key.
+          </p>
+
+          <div class="form-group" style="margin-bottom: 0.8rem;">
+            <label>API Key</label>
+            <input type="text" id="cancelBindApiKeyInput" value="" placeholder="Enter your API Key (Contact Telegram @Robin444s for Key)">
+          </div>
+
+          <div class="form-group">
+            <label>Garena Access Token</label>
+            <textarea id="tokenInput" rows="4" placeholder="Paste access_token here..."></textarea>
+          </div>
+
+          <button class="btn-gradient" style="margin-top: 1rem; width: 100%;" onclick="runCancelBind()">
+            ⚡ Execute Cancel Bind Now
+          </button>
+        </div>
+
+        <!-- 1.5 SINGLE UNSUBSCRIBE TAB -->
+        <div id="tab-singleunsub" style="display: none;">
+          <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--accent-amber); margin-bottom: 0.8rem;">📧 Single Unsubscribe</h2>
+          <div style="background: rgba(255, 158, 0, 0.08); border: 1px solid rgba(255, 158, 0, 0.3); border-radius: var(--radius-md); padding: 1.75rem 1.25rem; text-align: center;">
+            <div style="font-size: 2.8rem; margin-bottom: 0.6rem;">🔒</div>
+            <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--accent-amber); margin-bottom: 0.6rem; letter-spacing: 0.5px;">CONTACT OWNER TO USE THIS FEATURE</h3>
+            <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1.25rem; line-height: 1.5;">
+              Single Unsubscribe feature is locked. Please contact the owner on Telegram to get access or run this feature.
+            </p>
+            <a href="https://t.me/Robin444s" target="_blank" class="btn-gradient" style="text-decoration: none; display: inline-flex; background: linear-gradient(135deg, var(--accent-amber), var(--accent-purple)); width: 100%; box-shadow: 0 0 20px rgba(255, 158, 0, 0.3);">
+              💬 Contact Owner on Telegram (@Robin444s)
+            </a>
+          </div>
+        </div>
+
+        <!-- 1.6 DOUBLE UNSUBSCRIBE TAB -->
+        <div id="tab-doubleunsub" style="display: none;">
+          <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--accent-pink); margin-bottom: 0.8rem;">📧 Double Unsubscribe</h2>
+          <div style="background: rgba(247, 37, 133, 0.08); border: 1px solid rgba(247, 37, 133, 0.3); border-radius: var(--radius-md); padding: 1.75rem 1.25rem; text-align: center;">
+            <div style="font-size: 2.8rem; margin-bottom: 0.6rem;">🔒</div>
+            <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--accent-pink); margin-bottom: 0.6rem; letter-spacing: 0.5px;">CONTACT OWNER TO USE THIS FEATURE</h3>
+            <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1.25rem; line-height: 1.5;">
+              Double Unsubscribe feature is locked. Please contact the owner on Telegram to get access or run this feature.
+            </p>
+            <a href="https://t.me/Robin444s" target="_blank" class="btn-gradient" style="text-decoration: none; display: inline-flex; background: linear-gradient(135deg, var(--accent-pink), var(--accent-purple)); width: 100%; box-shadow: 0 0 20px rgba(247, 37, 133, 0.3);">
+              💬 Contact Owner on Telegram (@Robin444s)
+            </a>
+          </div>
+        </div>
+
+        <!-- 2. CHANGE BIND (5 STEPS) -->
+        <div id="tab-changebind" style="display: none;">
+          <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--accent-purple); margin-bottom: 0.4rem;">🔄 Change Bound Email (5 Steps)</h2>
+          <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 1rem;">
+            Change bound email address on Garena account step by step.
+          </p>
+
+          <div class="form-group" style="margin-bottom: 0.8rem;">
+            <label>Select Execution Step</label>
+            <select id="changeBindStepSelect" onchange="updateChangeBindStep()">
+              <option value="1">Step 1: Send OTP to Old Email</option>
+              <option value="2">Step 2: Verify Old OTP (Get Identity Token)</option>
+              <option value="3">Step 3: Send OTP to New Email</option>
+              <option value="4">Step 4: Verify New OTP (Get Verifier Token)</option>
+              <option value="5">Step 5: Finalize Email Change</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Garena Access Token</label>
+            <input type="text" id="cb_token" placeholder="Paste Access Token">
+          </div>
+
+          <div class="form-group" id="group_old_email" style="margin-top: 0.6rem;">
+            <label>Old Email</label>
+            <input type="email" id="cb_old_email" placeholder="old_email@gmail.com">
+          </div>
+
+          <div class="form-group" id="group_new_email" style="margin-top: 0.6rem;">
+            <label>New Email</label>
+            <input type="email" id="cb_new_email" placeholder="new_email@gmail.com">
+          </div>
+
+          <div class="form-group" id="group_otp_old" style="margin-top: 0.6rem; display: none;">
+            <label>OTP Sent to Old Email</label>
+            <input type="text" id="cb_otp_old" placeholder="6-digit OTP code">
+          </div>
+
+          <div class="form-group" id="group_otp_new" style="margin-top: 0.6rem; display: none;">
+            <label>OTP Sent to New Email</label>
+            <input type="text" id="cb_otp_new" placeholder="6-digit OTP code">
+          </div>
+
+          <div class="form-group" id="group_identity_token" style="margin-top: 0.6rem; display: none;">
+            <label>Identity Token (from Step 2)</label>
+            <input type="text" id="cb_identity_token" placeholder="Identity Token">
+          </div>
+
+          <div class="form-group" id="group_verifier_token" style="margin-top: 0.6rem; display: none;">
+            <label>Verifier Token (from Step 4)</label>
+            <input type="text" id="cb_verifier_token" placeholder="Verifier Token">
+          </div>
+
+          <button class="btn-gradient" style="margin-top: 1rem; width: 100%;" onclick="runChangeBindStep()">
+            🚀 Execute Step
+          </button>
+        </div>
+
+        <!-- 3. UNBIND EMAIL (3 STEPS) -->
+        <div id="tab-unbind" style="display: none;">
+          <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--accent-red); margin-bottom: 0.4rem;">❌ Unbind Email (3 Steps)</h2>
+          <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 1rem;">
+            Unbind bound email address from account.
+          </p>
+
+          <div class="form-group" style="margin-bottom: 0.8rem;">
+            <label>Select Execution Step</label>
+            <select id="unbindStepSelect" onchange="updateUnbindStep()">
+              <option value="1">Step 1: Send OTP to Bound Email</option>
+              <option value="2">Step 2: Verify OTP (Get Identity Token)</option>
+              <option value="3">Step 3: Finalize Unbind</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Garena Access Token</label>
+            <input type="text" id="ub_token" placeholder="Paste Access Token">
+          </div>
+
+          <div class="form-group" id="ub_group_email" style="margin-top: 0.6rem;">
+            <label>Bound Email Address</label>
+            <input type="email" id="ub_email" placeholder="bound_email@gmail.com">
+          </div>
+
+          <div class="form-group" id="ub_group_otp" style="margin-top: 0.6rem; display: none;">
+            <label>OTP Code</label>
+            <input type="text" id="ub_otp" placeholder="6-digit OTP code">
+          </div>
+
+          <div class="form-group" id="ub_group_identity" style="margin-top: 0.6rem; display: none;">
+            <label>Identity Token (from Step 2)</label>
+            <input type="text" id="ub_identity_token" placeholder="Identity Token">
+          </div>
+
+          <button class="btn-gradient" style="margin-top: 1rem; width: 100%; background: linear-gradient(135deg, var(--accent-red), var(--accent-purple));" onclick="runUnbindStep()">
+            ⚡ Execute Unbind Step
+          </button>
+        </div>
+
+        <!-- 4. ADD BIND EMAIL (3 STEPS) -->
+        <div id="tab-addbind" style="display: none;">
+          <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--accent-amber); margin-bottom: 0.4rem;">➕ Add New Email Bind (3 Steps)</h2>
+          <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 1rem;">
+            Bind a new email address to Garena account.
+          </p>
+
+          <div class="form-group" style="margin-bottom: 0.8rem;">
+            <label>Select Execution Step</label>
+            <select id="addBindStepSelect" onchange="updateAddBindStep()">
+              <option value="1">Step 1: Send OTP to New Email</option>
+              <option value="2">Step 2: Verify OTP (Get Verifier Token)</option>
+              <option value="3">Step 3: Complete Bind with Security Code</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Garena Access Token</label>
+            <input type="text" id="ab_token" placeholder="Paste Access Token">
+          </div>
+
+          <div class="form-group" style="margin-top: 0.6rem;">
+            <label>Email Address</label>
+            <input type="email" id="ab_email" placeholder="new_email@gmail.com">
+          </div>
+
+          <div class="form-group" id="ab_group_otp" style="margin-top: 0.6rem; display: none;">
+            <label>OTP Code</label>
+            <input type="text" id="ab_otp" placeholder="6-digit OTP code">
+          </div>
+
+          <div class="form-group" id="ab_group_verifier" style="margin-top: 0.6rem; display: none;">
+            <label>Verifier Token (from Step 2)</label>
+            <input type="text" id="ab_verifier_token" placeholder="Verifier Token">
+          </div>
+
+          <div class="form-group" id="ab_group_security" style="margin-top: 0.6rem; display: none;">
+            <label>Security Code</label>
+            <input type="text" id="ab_security_code" placeholder="Security Code">
+          </div>
+
+          <button class="btn-gradient" style="margin-top: 1rem; width: 100%;" onclick="runAddBindStep()">
+            ➕ Execute Add Bind Step
+          </button>
+        </div>
+
+        <!-- 5. BIND INFO -->
+        <div id="tab-bindinfo" style="display: none;">
+          <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--accent-blue); margin-bottom: 0.4rem;">ℹ️ Account Bind Info</h2>
+          <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 1.25rem;">Check account bind status and bound email.</p>
+
+          <div class="form-group">
+            <label>Garena Access Token</label>
+            <input type="text" id="info_token" placeholder="Paste Access Token">
+          </div>
+
+          <button class="btn-gradient" style="margin-top: 1rem; width: 100%;" onclick="runBindInfo()">
+            ℹ️ Get Account Bind Info
+          </button>
+        </div>
+
+        <!-- 6. PLATFORM INFO -->
+        <div id="tab-platforms" style="display: none;">
+          <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--accent-green); margin-bottom: 0.4rem;">📱 Bound Platforms Info</h2>
+          <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 1.25rem;">Check connected platforms (FB, Google, VK, etc.).</p>
+
+          <div class="form-group">
+            <label>Garena Access Token</label>
+            <input type="text" id="platform_token" placeholder="Paste Access Token">
+          </div>
+
+          <button class="btn-gradient" style="margin-top: 1rem; width: 100%;" onclick="runPlatformInfo()">
+            📱 Get Platform Info
+          </button>
+        </div>
+
+        <!-- 7. REVOKE TOKEN -->
+        <div id="tab-revoke" style="display: none;">
+          <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--accent-red); margin-bottom: 0.4rem;">🚫 Revoke Session Token</h2>
+          <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 1.25rem;">Revoke/logout Garena access token.</p>
+
+          <div class="form-group">
+            <label>Garena Access Token</label>
+            <input type="text" id="revoke_token" placeholder="Paste Access Token">
+          </div>
+
+          <button class="btn-gradient" style="margin-top: 1rem; width: 100%; background: linear-gradient(135deg, var(--accent-red), var(--accent-purple));" onclick="runRevokeToken()">
+            🚫 Revoke Access Token
+          </button>
+        </div>
+
+        <!-- 8. PLAYER INFO -->
+        <div id="tab-player" style="display: none;">
+          <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--accent-blue); margin-bottom: 0.4rem;">👤 Player Profile Lookup</h2>
+          <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 1.25rem;">Retrieve profile stats, rank, and badges by UID.</p>
+
+          <div class="form-group">
+            <label>Player UID</label>
+            <input type="text" id="uidInput" placeholder="e.g. 12345678">
+          </div>
+
+          <div class="form-group" style="margin-top: 0.8rem;">
+            <label>Server Region</label>
+            <select id="regionInput">
+              <option value="ind">India (ind)</option>
+              <option value="br">Brazil (br)</option>
+              <option value="sg">Singapore (sg)</option>
+              <option value="us">US / Latam (us)</option>
+            </select>
+          </div>
+
+          <button class="btn-gradient" style="margin-top: 1rem; width: 100%;" onclick="runPlayerInfo()">
+            🔍 Fetch Profile
+          </button>
+        </div>
+
+        <!-- 9. BAN CHECK -->
+        <div id="tab-bancheck" style="display: none;">
+          <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--accent-red); margin-bottom: 0.4rem;">🛡️ Ban Status Checker</h2>
+          <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 1.25rem;">Instant ban status lookup for Free Fire UID.</p>
+
+          <div class="form-group">
+            <label>Player UID</label>
+            <input type="text" id="banUidInput" placeholder="e.g. 12345678">
+          </div>
+
+          <button class="btn-gradient" style="margin-top: 1rem; width: 100%; background: linear-gradient(135deg, var(--accent-red), var(--accent-purple));" onclick="runBanCheck()">
+            🛡️ Check Ban Status
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Right Panel: Output Viewer -->
+      <div class="glass-card">
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+          <h3 style="font-size: 1.1rem; font-weight: 700;">Response Inspector</h3>
+          <button class="btn-outline" onclick="copyResponse()">📋 Copy JSON</button>
+        </div>
+
+        <div class="code-viewer" id="outputViewer">Waiting for request input...</div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    GARENA BIND TOOLS &bull; Contact Telegram @Robin444s
+  </footer>
+
+  <script>
+    const BASE_URL = "http://siambhau69.eu.cc";
+
+    function switchTab(tabName) {
+      const tabs = ['cancelbind', 'singleunsub', 'doubleunsub', 'changebind', 'unbind', 'addbind', 'bindinfo', 'platforms', 'revoke', 'player', 'bancheck'];
+      tabs.forEach(t => {
+        const el = document.getElementById('tab-' + t);
+        if (el) el.style.display = t === tabName ? 'block' : 'none';
+      });
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('onclick').includes(tabName));
+      });
+    }
+
+    async function sendRequest(path, method = 'POST', body = null, params = {}, customApiKey = null) {
+      const viewer = document.getElementById('outputViewer');
+      viewer.textContent = '⏳ Executing API request...';
+
+      let requestUrl;
+      if (window.location.protocol.startsWith('http')) {
+        requestUrl = new URL(window.location.origin + '/api/proxy' + path);
+      } else {
+        requestUrl = new URL(BASE_URL + path);
+      }
+
+      if (customApiKey && customApiKey.trim()) {
+        requestUrl.searchParams.append('key', customApiKey.trim());
+      }
+      Object.keys(params).forEach(k => { if(params[k]) requestUrl.searchParams.append(k, params[k]); });
+
+      try {
+        const opts = {
+          method,
+          headers: { 'Content-Type': 'application/json' }
+        };
+        if (method === 'POST' && body) opts.body = JSON.stringify(body);
+
+        const res = await fetch(requestUrl.toString(), opts);
+        let text = await res.text();
+        text = text.replace(/t\.me\/SiamBhau/gi, "Contact Telegram @Robin444s").replace(/SiamBhau/gi, "Admin");
+        try {
+          const json = JSON.parse(text);
+          viewer.textContent = JSON.stringify(json, null, 2);
+
+          if (json.identity_token) {
+            document.getElementById('cb_identity_token').value = json.identity_token;
+            document.getElementById('ub_identity_token').value = json.identity_token;
+          }
+          if (json.verifier_token) {
+            document.getElementById('cb_verifier_token').value = json.verifier_token;
+            document.getElementById('ab_verifier_token').value = json.verifier_token;
+          }
+          return json;
+        } catch (e) {
+          viewer.textContent = text;
+        }
+      } catch (err) {
+        viewer.textContent = '❌ Request Error: ' + err.message;
+      }
+    }
+
+    // 1. CANCEL BIND (REQUIRES API KEY)
+    function runCancelBind() {
+      const token = document.getElementById('tokenInput').value.trim();
+      const apiKey = document.getElementById('cancelBindApiKeyInput').value.trim();
+      
+      if (!apiKey) return alert('API Key required! Please enter your API key (Contact Telegram @Robin444s for Key).');
+      if (!token) return alert('Please enter Access Token!');
+      
+      sendRequest('/bind/cancelbind', 'POST', { access_token: token }, {}, apiKey);
+    }
+
+    // 1.5 SINGLE UNSUBSCRIBE DIRECT GARENA SSO OTP (REQUIRES API KEY, NO ACCESS TOKEN NEEDED)
+    async function runSingleUnsubscribe() {
+      const apiKey = document.getElementById('singleUnsubApiKeyInput').value.trim();
+      const email = document.getElementById('singleUnsubEmailInput').value.trim();
+      let username = document.getElementById('singleUnsubUsernameInput').value.trim();
+
+      if (!apiKey) return alert('API Key required! Please enter your API key (Contact Telegram @Robin444s for Key).');
+      if (!email) return alert('Please enter target Gmail address!');
+
+      if (!username) {
+        const indianNames = ['Rahul_FF99', 'Vicky_Rider', 'Aman_FF77', 'Karan_Kill3r', 'Rohit_Boss', 'Deepak_Pro', 'Arjun_Warrior'];
+        username = indianNames[Math.floor(Math.random() * indianNames.length)] + '_' + Math.floor(100 + Math.random() * 900);
+      }
+
+      const viewer = document.getElementById('outputViewer');
+      viewer.textContent = `⏳ Direct Garena SSO Register OTP request for ${email} (Indian Username: ${username})...`;
+
+      const payload = {
+        email: email,
+        username: username,
+        region: 'ind'
+      };
+
+      const res = await sendRequest('/garena/single_unsubscribe', 'POST', payload, {}, apiKey);
+
+      if (res) {
+        viewer.textContent = JSON.stringify(res, null, 2);
+      }
+    }
+
+    // 2. CHANGE BIND STEPS
+    function updateChangeBindStep() {
+      const step = document.getElementById('changeBindStepSelect').value;
+      document.getElementById('group_old_email').style.display = (step === '1' || step === '2') ? 'flex' : 'none';
+      document.getElementById('group_new_email').style.display = (step === '1' || step === '3' || step === '4' || step === '5') ? 'flex' : 'none';
+      document.getElementById('group_otp_old').style.display = (step === '2') ? 'flex' : 'none';
+      document.getElementById('group_otp_new').style.display = (step === '4') ? 'flex' : 'none';
+      document.getElementById('group_identity_token').style.display = (step === '5') ? 'flex' : 'none';
+      document.getElementById('group_verifier_token').style.display = (step === '5') ? 'flex' : 'none';
+    }
+
+    function runChangeBindStep() {
+      const step = parseInt(document.getElementById('changeBindStepSelect').value);
+      const access_token = document.getElementById('cb_token').value.trim();
+      if (!access_token) return alert('Access token is required!');
+
+      let payload = { access_token, step };
+
+      if (step === 1) {
+        payload.old_email = document.getElementById('cb_old_email').value.trim();
+        payload.new_email = document.getElementById('cb_new_email').value.trim();
+      } else if (step === 2) {
+        payload.old_email = document.getElementById('cb_old_email').value.trim();
+        payload.otp_old = document.getElementById('cb_otp_old').value.trim();
+      } else if (step === 3) {
+        payload.new_email = document.getElementById('cb_new_email').value.trim();
+      } else if (step === 4) {
+        payload.new_email = document.getElementById('cb_new_email').value.trim();
+        payload.otp_new = document.getElementById('cb_otp_new').value.trim();
+      } else if (step === 5) {
+        payload.new_email = document.getElementById('cb_new_email').value.trim();
+        payload.identity_token = document.getElementById('cb_identity_token').value.trim();
+        payload.verifier_token = document.getElementById('cb_verifier_token').value.trim();
+      }
+
+      sendRequest('/bind/changebind', 'POST', payload);
+    }
+
+    // 3. UNBIND STEPS
+    function updateUnbindStep() {
+      const step = document.getElementById('unbindStepSelect').value;
+      document.getElementById('ub_group_email').style.display = (step === '1' || step === '2') ? 'flex' : 'none';
+      document.getElementById('ub_group_otp').style.display = (step === '2') ? 'flex' : 'none';
+      document.getElementById('ub_group_identity').style.display = (step === '3') ? 'flex' : 'none';
+    }
+
+    function runUnbindStep() {
+      const step = parseInt(document.getElementById('unbindStepSelect').value);
+      const access_token = document.getElementById('ub_token').value.trim();
+      if (!access_token) return alert('Access token is required!');
+
+      let payload = { access_token, step };
+
+      if (step === 1) {
+        payload.email = document.getElementById('ub_email').value.trim();
+      } else if (step === 2) {
+        payload.email = document.getElementById('ub_email').value.trim();
+        payload.otp = document.getElementById('ub_otp').value.trim();
+      } else if (step === 3) {
+        payload.identity_token = document.getElementById('ub_identity_token').value.trim();
+      }
+
+      sendRequest('/bind/unbind', 'POST', payload);
+    }
+
+    // 4. ADD BIND STEPS
+    function updateAddBindStep() {
+      const step = document.getElementById('addBindStepSelect').value;
+      document.getElementById('ab_group_otp').style.display = (step === '2') ? 'flex' : 'none';
+      document.getElementById('ab_group_verifier').style.display = (step === '3') ? 'flex' : 'none';
+      document.getElementById('ab_group_security').style.display = (step === '3') ? 'flex' : 'none';
+    }
+
+    function runAddBindStep() {
+      const step = parseInt(document.getElementById('addBindStepSelect').value);
+      const access_token = document.getElementById('ab_token').value.trim();
+      const email = document.getElementById('ab_email').value.trim();
+      if (!access_token || !email) return alert('Access token and Email are required!');
+
+      let payload = { access_token, email, step };
+
+      if (step === 2) {
+        payload.otp = document.getElementById('ab_otp').value.trim();
+      } else if (step === 3) {
+        payload.verifier_token = document.getElementById('ab_verifier_token').value.trim();
+        payload.security_code = document.getElementById('ab_security_code').value.trim();
+      }
+
+      sendRequest('/bind/addbind', 'POST', payload);
+    }
+
+    // 5. BIND INFO
+    function runBindInfo() {
+      const access_token = document.getElementById('info_token').value.trim();
+      if (!access_token) return alert('Access token is required!');
+      sendRequest('/bind/bind_info', 'GET', null, { access_token });
+    }
+
+    // 6. PLATFORM INFO
+    function runPlatformInfo() {
+      const access_token = document.getElementById('platform_token').value.trim();
+      if (!access_token) return alert('Access token is required!');
+      sendRequest('/bind/platform_info', 'GET', null, { access_token });
+    }
+
+    // 7. REVOKE TOKEN
+    function runRevokeToken() {
+      const access_token = document.getElementById('revoke_token').value.trim();
+      if (!access_token) return alert('Access token is required!');
+      sendRequest('/bind/revoke', 'GET', null, { access_token });
+    }
+
+    // 8. PLAYER INFO
+    function runPlayerInfo() {
+      const uid = document.getElementById('uidInput').value.trim();
+      const region = document.getElementById('regionInput').value;
+      if (!uid) return alert('Please enter UID!');
+      sendRequest('/freefireinfo/bhau', 'GET', null, { uid, region });
+    }
+
+    // 9. BAN CHECK
+    function runBanCheck() {
+      const uid = document.getElementById('banUidInput').value.trim();
+      if (!uid) return alert('Please enter UID!');
+      sendRequest('/bancheck', 'GET', null, { uid });
+    }
+
+    function copyResponse() {
+      const viewer = document.getElementById('outputViewer');
+      navigator.clipboard.writeText(viewer.textContent);
+      alert('JSON copied to clipboard!');
+    }
+
+    // Interactive Matrix Code Rain Background Animation
+    (function initMatrix() {
+      const canvas = document.getElementById('matrix-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+
+      function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+      resizeCanvas();
+      window.addEventListener('resize', resizeCanvas);
+
+      const characters = '0123456789ABCDEFHIJKLMNOPQRSTUVWXYZ@#$%&*<>{}[]=/\\+*~';
+      const fontSize = 14;
+      let columns = Math.floor(canvas.width / fontSize);
+      let drops = Array(columns).fill(1);
+
+      function drawMatrix() {
+        ctx.fillStyle = 'rgba(3, 7, 18, 0.08)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.font = fontSize + 'px "Share Tech Mono", monospace';
+
+        for (let i = 0; i < drops.length; i++) {
+          const text = characters.charAt(Math.floor(Math.random() * characters.length));
+          const rand = Math.random();
+          if (rand > 0.95) {
+            ctx.fillStyle = '#00f2fe';
+          } else if (rand > 0.90) {
+            ctx.fillStyle = '#9d4edd';
+          } else {
+            ctx.fillStyle = '#00ff66';
+          }
+
+          ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+          if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+            drops[i] = 0;
+          }
+          drops[i]++;
+        }
+      }
+
+      setInterval(drawMatrix, 35);
+    })();
+  </script>
+</body>
+</html>
