@@ -3,10 +3,6 @@
     "expire_at": null,
     "label": "Permanent Master Key (Never Expires)"
   },
-  "GBIND-10M-918234": {
-    "expire_at": 1788669060,
-    "label": "Old 10-Minute Key (Expired at 10:01 AM IST)"
-  },
   "GBIND-10M-719204": {
     "expire_at": 1788669960,
     "label": "New 10-Minute Access Key (Expires at 10:16 AM IST)"
