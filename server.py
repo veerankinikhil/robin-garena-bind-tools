@@ -24,38 +24,6 @@ def save_keys_db(db):
         print(f"[KEYS DB] Error saving {KEYS_FILE}: {e}")
 
 def load_keys_db():
-    default_keys = {
-        "GBIND-PERM-8899": {
-            "expire_at": None,
-            "label": "Permanent Master Key",
-            "activated": True
-        },
-        "GBIND-10M-918234": {
-            "duration": 600,
-            "expire_at": None,
-            "label": "10-Minute Access Key (Activates on First Use)",
-            "activated": False
-        },
-        "GBIND-1H-381920": {
-            "duration": 3600,
-            "expire_at": None,
-            "label": "1-Hour Access Key (Activates on First Use)",
-            "activated": False
-        },
-        "GBIND-1D-849201": {
-            "duration": 86400,
-            "expire_at": None,
-            "label": "1-Day Access Key (Activates on First Use)",
-            "activated": False
-        },
-        "GBIND-2D-721049": {
-            "duration": 172800,
-            "expire_at": None,
-            "label": "2-Day Access Key (Activates on First Use)",
-            "activated": False
-        }
-    }
-
     if os.path.exists(KEYS_FILE):
         try:
             with open(KEYS_FILE, "r", encoding="utf-8") as f:
@@ -65,6 +33,13 @@ def load_keys_db():
         except Exception as e:
             print(f"[KEYS DB] Warning reading {KEYS_FILE}: {e}")
 
+    default_keys = {
+        "GBIND-PERM-8899": {"expire_at": None, "label": "Permanent Master Key (Never Expires)"},
+        "GBIND-10M-719204": {"expire_at": 1788669960, "label": "10-Minute Access Key (Expires at 10:16 AM IST)"},
+        "GBIND-1H-840291": {"expire_at": 1788672960, "label": "1-Hour Access Key (Expires at 11:06 AM IST)"},
+        "GBIND-1D-389102": {"expire_at": 1788755760, "label": "1-Day Access Key (Expires Sept 7, 10:06 AM IST)"},
+        "GBIND-2D-958103": {"expire_at": 1788842160, "label": "2-Day Access Key (Expires Sept 8, 10:06 AM IST)"}
+    }
     save_keys_db(default_keys)
     return default_keys
 
@@ -155,16 +130,7 @@ class ProxyHandler(BaseHTTPRequestHandler):
 
             key_info = API_KEYS_DB[user_key]
 
-            # First-time activation check for keys with a duration
-            if not key_info.get("activated", True) and key_info.get("duration"):
-                now = time.time()
-                key_info["activated"] = True
-                key_info["activated_at"] = now
-                key_info["expire_at"] = now + key_info["duration"]
-                save_keys_db(API_KEYS_DB)
-                print(f"[KEYS DB] Activated key {user_key}. Expires at epoch {key_info['expire_at']}")
-
-            # Expiration check
+            # Strict expiration check against fixed Unix timestamp
             if key_info.get("expire_at") is not None and time.time() > key_info["expire_at"]:
                 self.send_response(403)
                 self.send_header("Content-Type", "application/json; charset=utf-8")
@@ -314,7 +280,7 @@ def run_server():
     server_address = ('', PORT)
     httpd = ThreadingHTTPServer(server_address, ProxyHandler)
     print(f"🚀 BindTools High-Speed Proxy Server running on http://127.0.0.1:{PORT}")
-    print(f"🔑 Persistent Expirable API Keys Database Loaded")
+    print(f"🔑 Fixed Absolute Key Expiration Active")
     httpd.serve_forever()
 
 if __name__ == "__main__":

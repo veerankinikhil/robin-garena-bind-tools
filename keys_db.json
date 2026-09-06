@@ -1,31 +1,26 @@
 {
   "GBIND-PERM-8899": {
     "expire_at": null,
-    "label": "Permanent Master Key",
-    "activated": true
+    "label": "Permanent Master Key (Never Expires)"
   },
   "GBIND-10M-918234": {
-    "duration": 600,
-    "expire_at": null,
-    "label": "10-Minute Access Key (Activates on First Use)",
-    "activated": false
+    "expire_at": 1788669060,
+    "label": "Old 10-Minute Key (Expired at 10:01 AM IST)"
   },
-  "GBIND-1H-381920": {
-    "duration": 3600,
-    "expire_at": null,
-    "label": "1-Hour Access Key (Activates on First Use)",
-    "activated": false
+  "GBIND-10M-719204": {
+    "expire_at": 1788669960,
+    "label": "New 10-Minute Access Key (Expires at 10:16 AM IST)"
   },
-  "GBIND-1D-849201": {
-    "duration": 86400,
-    "expire_at": null,
-    "label": "1-Day Access Key (Activates on First Use)",
-    "activated": false
+  "GBIND-1H-840291": {
+    "expire_at": 1788672960,
+    "label": "New 1-Hour Access Key (Expires at 11:06 AM IST)"
   },
-  "GBIND-2D-721049": {
-    "duration": 172800,
-    "expire_at": null,
-    "label": "2-Day Access Key (Activates on First Use)",
-    "activated": false
+  "GBIND-1D-389102": {
+    "expire_at": 1788755760,
+    "label": "New 1-Day Access Key (Expires Sept 7, 10:06 AM IST)"
+  },
+  "GBIND-2D-958103": {
+    "expire_at": 1788842160,
+    "label": "New 2-Day Access Key (Expires Sept 8, 10:06 AM IST)"
   }
 }
