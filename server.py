@@ -11,30 +11,73 @@ PORT = int(os.environ.get("PORT", 8080))
 TARGET_BASE = os.environ.get("TARGET_BASE", "http://siambhau69.eu.cc")
 UPSTREAM_API_KEY = os.environ.get("UPSTREAM_API_KEY", "")
 
-# Current Timestamp
-NOW = time.time()
-
-# Expirable API Keys Database
-API_KEYS_DB = {
-    # Permanent VIP Key (Never Expires)
-    "PREM-FF-VIP-8899": {"expire_at": None, "label": "Permanent VIP Key"},
-
-    # 10-Minute Key
-    "VIP-10MIN-881923": {"expire_at": NOW + 600, "label": "10-Minute Access Key"},
-
-    # 1-Hour Key
-    "VIP-1HR-772910": {"expire_at": NOW + 3600, "label": "1-Hour Access Key"},
-
-    # 1-Day Key (24 Hours)
-    "VIP-1DAY-993812": {"expire_at": NOW + 86400, "label": "1-Day Access Key"},
-
-    # 2-Day Key (48 Hours)
-    "VIP-2DAY-445891": {"expire_at": NOW + 172800, "label": "2-Day Access Key"},
-}
-
-# Path to standalone.html
+# Base Directory & Keys DB Path
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+KEYS_FILE = os.path.join(BASE_DIR, "keys_db.json")
 HTML_FILE = os.path.join(BASE_DIR, "standalone.html")
+
+def save_keys_db(db):
+    try:
+        with open(KEYS_FILE, "w", encoding="utf-8") as f:
+            json.dump(db, f, indent=2)
+    except Exception as e:
+        print(f"[KEYS DB] Error saving {KEYS_FILE}: {e}")
+
+def load_keys_db():
+    now = time.time()
+    # Default initial keys if keys_db.json does not exist
+    # VIP-10MIN-881923 is explicitly set to expired (past epoch) since it was created yesterday
+    default_keys = {
+        "PREM-FF-VIP-8899": {
+            "expire_at": None,
+            "label": "Permanent VIP Key",
+            "activated": True
+        },
+        "VIP-10MIN-881923": {
+            "expire_at": 1757134000,
+            "label": "10-Minute Access Key (Created Yesterday - Expired)",
+            "activated": True
+        },
+        "VIP-1HR-772910": {
+            "duration": 3600,
+            "expire_at": None,
+            "label": "1-Hour Access Key (Activates on first use)",
+            "activated": False
+        },
+        "VIP-1DAY-993812": {
+            "duration": 86400,
+            "expire_at": None,
+            "label": "1-Day Access Key (Activates on first use)",
+            "activated": False
+        },
+        "VIP-2DAY-445891": {
+            "duration": 172800,
+            "expire_at": None,
+            "label": "2-Day Access Key (Activates on first use)",
+            "activated": False
+        }
+    }
+
+    if os.path.exists(KEYS_FILE):
+        try:
+            with open(KEYS_FILE, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                if isinstance(data, dict):
+                    updated = False
+                    for k, v in default_keys.items():
+                        if k not in data:
+                            data[k] = v
+                            updated = True
+                    if updated:
+                        save_keys_db(data)
+                    return data
+        except Exception as e:
+            print(f"[KEYS DB] Warning reading {KEYS_FILE}: {e}")
+
+    save_keys_db(default_keys)
+    return default_keys
+
+API_KEYS_DB = load_keys_db()
 
 def sanitize_response(data_bytes):
     if not data_bytes:
@@ -120,7 +163,18 @@ class ProxyHandler(BaseHTTPRequestHandler):
                 return
 
             key_info = API_KEYS_DB[user_key]
-            if key_info["expire_at"] is not None and time.time() > key_info["expire_at"]:
+
+            # First-time activation check for keys with a duration
+            if not key_info.get("activated", True) and key_info.get("duration"):
+                now = time.time()
+                key_info["activated"] = True
+                key_info["activated_at"] = now
+                key_info["expire_at"] = now + key_info["duration"]
+                save_keys_db(API_KEYS_DB)
+                print(f"[KEYS DB] Activated key {user_key}. Expires at epoch {key_info['expire_at']}")
+
+            # Expiration check
+            if key_info.get("expire_at") is not None and time.time() > key_info["expire_at"]:
                 self.send_response(403)
                 self.send_header("Content-Type", "application/json; charset=utf-8")
                 self._send_cors_headers()
@@ -269,7 +323,7 @@ def run_server():
     server_address = ('', PORT)
     httpd = ThreadingHTTPServer(server_address, ProxyHandler)
     print(f"🚀 BindTools High-Speed Proxy Server running on http://127.0.0.1:{PORT}")
-    print(f"🔑 Garena SSO Single Unsubscribe Direct OTP Handler Active")
+    print(f"🔑 Persistent Expirable API Keys Database Loaded")
     httpd.serve_forever()
 
 if __name__ == "__main__":

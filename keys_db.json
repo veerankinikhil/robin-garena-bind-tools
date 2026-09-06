@@ -1,0 +1,30 @@
+{
+  "PREM-FF-VIP-8899": {
+    "expire_at": null,
+    "label": "Permanent VIP Key",
+    "activated": true
+  },
+  "VIP-10MIN-881923": {
+    "expire_at": 1757134000,
+    "label": "10-Minute Access Key (Created Yesterday - Expired)",
+    "activated": true
+  },
+  "VIP-1HR-772910": {
+    "duration": 3600,
+    "expire_at": null,
+    "label": "1-Hour Access Key (Activates on first use)",
+    "activated": false
+  },
+  "VIP-1DAY-993812": {
+    "duration": 86400,
+    "expire_at": null,
+    "label": "1-Day Access Key (Activates on first use)",
+    "activated": false
+  },
+  "VIP-2DAY-445891": {
+    "duration": 172800,
+    "expire_at": null,
+    "label": "2-Day Access Key (Activates on first use)",
+    "activated": false
+  }
+}
