@@ -1,30 +1,31 @@
 {
-  "PREM-FF-VIP-8899": {
+  "GBIND-PERM-8899": {
     "expire_at": null,
-    "label": "Permanent VIP Key",
+    "label": "Permanent Master Key",
     "activated": true
   },
-  "VIP-10MIN-881923": {
-    "expire_at": 1757134000,
-    "label": "10-Minute Access Key (Created Yesterday - Expired)",
-    "activated": true
+  "GBIND-10M-918234": {
+    "duration": 600,
+    "expire_at": null,
+    "label": "10-Minute Access Key (Activates on First Use)",
+    "activated": false
   },
-  "VIP-1HR-772910": {
+  "GBIND-1H-381920": {
     "duration": 3600,
     "expire_at": null,
-    "label": "1-Hour Access Key (Activates on first use)",
+    "label": "1-Hour Access Key (Activates on First Use)",
     "activated": false
   },
-  "VIP-1DAY-993812": {
+  "GBIND-1D-849201": {
     "duration": 86400,
     "expire_at": null,
-    "label": "1-Day Access Key (Activates on first use)",
+    "label": "1-Day Access Key (Activates on First Use)",
     "activated": false
   },
-  "VIP-2DAY-445891": {
+  "GBIND-2D-721049": {
     "duration": 172800,
     "expire_at": null,
-    "label": "2-Day Access Key (Activates on first use)",
+    "label": "2-Day Access Key (Activates on First Use)",
     "activated": false
   }
 }

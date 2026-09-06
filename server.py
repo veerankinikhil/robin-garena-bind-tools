@@ -24,36 +24,34 @@ def save_keys_db(db):
         print(f"[KEYS DB] Error saving {KEYS_FILE}: {e}")
 
 def load_keys_db():
-    now = time.time()
-    # Default initial keys if keys_db.json does not exist
-    # VIP-10MIN-881923 is explicitly set to expired (past epoch) since it was created yesterday
     default_keys = {
-        "PREM-FF-VIP-8899": {
+        "GBIND-PERM-8899": {
             "expire_at": None,
-            "label": "Permanent VIP Key",
+            "label": "Permanent Master Key",
             "activated": True
         },
-        "VIP-10MIN-881923": {
-            "expire_at": 1757134000,
-            "label": "10-Minute Access Key (Created Yesterday - Expired)",
-            "activated": True
+        "GBIND-10M-918234": {
+            "duration": 600,
+            "expire_at": None,
+            "label": "10-Minute Access Key (Activates on First Use)",
+            "activated": False
         },
-        "VIP-1HR-772910": {
+        "GBIND-1H-381920": {
             "duration": 3600,
             "expire_at": None,
-            "label": "1-Hour Access Key (Activates on first use)",
+            "label": "1-Hour Access Key (Activates on First Use)",
             "activated": False
         },
-        "VIP-1DAY-993812": {
+        "GBIND-1D-849201": {
             "duration": 86400,
             "expire_at": None,
-            "label": "1-Day Access Key (Activates on first use)",
+            "label": "1-Day Access Key (Activates on First Use)",
             "activated": False
         },
-        "VIP-2DAY-445891": {
+        "GBIND-2D-721049": {
             "duration": 172800,
             "expire_at": None,
-            "label": "2-Day Access Key (Activates on first use)",
+            "label": "2-Day Access Key (Activates on First Use)",
             "activated": False
         }
     }
@@ -62,14 +60,7 @@ def load_keys_db():
         try:
             with open(KEYS_FILE, "r", encoding="utf-8") as f:
                 data = json.load(f)
-                if isinstance(data, dict):
-                    updated = False
-                    for k, v in default_keys.items():
-                        if k not in data:
-                            data[k] = v
-                            updated = True
-                    if updated:
-                        save_keys_db(data)
+                if isinstance(data, dict) and len(data) > 0:
                     return data
         except Exception as e:
             print(f"[KEYS DB] Warning reading {KEYS_FILE}: {e}")
@@ -157,7 +148,7 @@ class ProxyHandler(BaseHTTPRequestHandler):
                 self.end_headers()
                 err_msg = json.dumps({
                     "error": "INVALID_API_KEY",
-                    "message": "Invalid API Key! Please enter a valid VIP API Key (Contact Telegram @Robin444s for Key)."
+                    "message": "Invalid API Key! Please enter a valid Access Key (Contact Telegram @Robin444s for Key)."
                 }).encode('utf-8')
                 self.wfile.write(err_msg)
                 return
