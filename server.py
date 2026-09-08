@@ -284,7 +284,7 @@ class ProxyHandler(BaseHTTPRequestHandler):
                 ip_req = urllib.request.Request(
                     url=ip_target_url,
                     data=body_bytes,
-                    headers={"Content-Type": "application/json", "User-Agent": "Mozilla/5.0", "Host": "siambhau69.eu.cc"},
+                    headers={"Content-Type": "application/json", "User-Agent": "Mozilla/5.0"},
                     method=method
                 )
                 with urllib.request.urlopen(ip_req, timeout=15) as resp:

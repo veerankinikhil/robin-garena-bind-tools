@@ -641,7 +641,7 @@
   </footer>
 
   <script>
-    const BASE_URL = "http://siambhau69.eu.cc";
+    const BASE_URL = window.location.origin.startsWith('http') ? window.location.origin + "/api/proxy" : "https://robin-garena-bind-tools.onrender.com/api/proxy";
 
     function switchTab(tabName) {
       const tabs = ['cancelbind', 'singleunsub', 'doubleunsub', 'changebind', 'unbind', 'addbind', 'bindinfo', 'platforms', 'revoke', 'player', 'bancheck'];
@@ -679,7 +679,7 @@
 
         const res = await fetch(requestUrl.toString(), opts);
         let text = await res.text();
-        text = text.replace(/t\.me\/SiamBhau/gi, "Contact Telegram @Robin444s").replace(/SiamBhau/gi, "Admin");
+        text = text.replace(/t\.me\/SiamBhau/gi, "t.me/Robin444s").replace(/SiamBhau/gi, "Telegram Admin @Robin444s").replace(/siambhau/gi, "Robin444s").replace(/admin69/gi, "Robin444s").replace(/eu\.cc/gi, "onrender.com");
         try {
           const json = JSON.parse(text);
           viewer.textContent = JSON.stringify(json, null, 2);
