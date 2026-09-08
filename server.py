@@ -8,7 +8,7 @@ import urllib.parse
 from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 
 PORT = int(os.environ.get("PORT", 8080))
-TARGET_BASE = os.environ.get("TARGET_BASE", "http://siambhau69.eu.cc")
+TARGET_BASE = os.environ.get("TARGET_BASE", "https://siambhau69.eu.cc")
 UPSTREAM_API_KEY = os.environ.get("UPSTREAM_API_KEY", "")
 
 # Base Directory & Keys DB Path
@@ -281,7 +281,7 @@ class ProxyHandler(BaseHTTPRequestHandler):
         except Exception as primary_error:
             # Fallback to direct IP route if DNS fails
             try:
-                ip_target_url = f"http://104.21.15.194{endpoint}?{encoded_query}"
+                ip_target_url = f"https://104.21.15.194{endpoint}?{encoded_query}"
                 ip_req = urllib.request.Request(
                     url=ip_target_url,
                     data=body_bytes,
@@ -311,7 +311,7 @@ def run_server():
     server_address = ('', PORT)
     httpd = ThreadingHTTPServer(server_address, ProxyHandler)
     print(f"🚀 BindTools High-Speed Proxy Server running on http://127.0.0.1:{PORT}")
-    print(f"🔑 Fixed Absolute Key Expiration & Upstream Sanitization Active")
+    print(f"🔑 Fixed Absolute Key Expiration & HTTPS Upstream Target Active")
     httpd.serve_forever()
 
 if __name__ == "__main__":
