@@ -8,7 +8,7 @@ import urllib.parse
 from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 
 PORT = int(os.environ.get("PORT", 8080))
-TARGET_BASE = os.environ.get("TARGET_BASE", "https://siambhau69.eu.cc")
+TARGET_BASE = os.environ.get("TARGET_BASE", "https://siambhau69.eu.cc").rstrip("/")
 UPSTREAM_API_KEY = os.environ.get("UPSTREAM_API_KEY", "")
 
 # Base Directory & Keys DB Path
@@ -241,8 +241,7 @@ class ProxyHandler(BaseHTTPRequestHandler):
             headers={
                 "Content-Type": "application/json",
                 "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-                "Accept": "application/json, text/plain, */*",
-                "Host": "siambhau69.eu.cc"
+                "Accept": "application/json, text/plain, */*"
             },
             method=method
         )
@@ -311,7 +310,7 @@ def run_server():
     server_address = ('', PORT)
     httpd = ThreadingHTTPServer(server_address, ProxyHandler)
     print(f"🚀 BindTools High-Speed Proxy Server running on http://127.0.0.1:{PORT}")
-    print(f"🔑 Fixed Absolute Key Expiration & HTTPS Upstream Target Active")
+    print(f"🔑 Clean Native Host Header Routing Active")
     httpd.serve_forever()
 
 if __name__ == "__main__":
