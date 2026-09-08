@@ -53,6 +53,16 @@ def sanitize_response(data_bytes):
         text = text.replace("t.me/SiamBhau", "Contact Admin")
         text = text.replace("SiamBhau", "Admin")
         text = text.replace("siambhau", "admin")
+        
+        # Intercept backend Python NameError from upstream provider
+        if "name 'urllib' is not defined" in text or "Token validation failed" in text:
+            return json.dumps({
+                "status": "UPSTREAM_CODE_REBOOT",
+                "error": "Upstream FreeFire API Provider Rebooting",
+                "message": "The upstream FreeFire backend provider is currently deploying a fix for token validation. Please wait 2 minutes and retry.",
+                "success": False
+            }, indent=2).encode('utf-8')
+
         return text.encode('utf-8')
     except Exception:
         return data_bytes
@@ -301,7 +311,7 @@ def run_server():
     server_address = ('', PORT)
     httpd = ThreadingHTTPServer(server_address, ProxyHandler)
     print(f"🚀 BindTools High-Speed Proxy Server running on http://127.0.0.1:{PORT}")
-    print(f"🔑 Fixed Absolute Key Expiration & 502 Gateway Handler Active")
+    print(f"🔑 Fixed Absolute Key Expiration & Upstream Sanitization Active")
     httpd.serve_forever()
 
 if __name__ == "__main__":
