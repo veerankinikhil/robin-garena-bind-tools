@@ -35,10 +35,10 @@ def load_keys_db():
 
     default_keys = {
         "GBIND-PERM-8899": {"expire_at": None, "label": "Permanent Master Key (Never Expires)"},
-        "GBIND-10M-719204": {"expire_at": 1788669960, "label": "10-Minute Access Key (Expires at 10:16 AM IST)"},
-        "GBIND-1H-840291": {"expire_at": 1788672960, "label": "1-Hour Access Key (Expires at 11:06 AM IST)"},
-        "GBIND-1D-389102": {"expire_at": 1788755760, "label": "1-Day Access Key (Expires Sept 7, 10:06 AM IST)"},
-        "GBIND-2D-958103": {"expire_at": 1788842160, "label": "2-Day Access Key (Expires Sept 8, 10:06 AM IST)"}
+        "GBIND-10M-719204": {"expire_at": 1788669960, "label": "10-Minute Access Key"},
+        "GBIND-1H-840291": {"expire_at": 1788672960, "label": "1-Hour Access Key"},
+        "GBIND-1D-389102": {"expire_at": 1788755760, "label": "1-Day Access Key"},
+        "GBIND-2D-958103": {"expire_at": 1788842160, "label": "2-Day Access Key"}
     }
     save_keys_db(default_keys)
     return default_keys
@@ -246,12 +246,28 @@ class ProxyHandler(BaseHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write(sanitize_response(resp_data))
         except urllib.error.HTTPError as e:
-            err_data = e.read()
+            err_bytes = e.read()
+            # Intercept 502/503 Cloudflare Bad Gateway errors from upstream provider
+            if e.code in [502, 503, 504]:
+                self.send_response(502)
+                self.send_header("Content-Type", "application/json; charset=utf-8")
+                self._send_cors_headers()
+                self.end_headers()
+                custom_err = json.dumps({
+                    "status": "UPSTREAM_SERVER_MAINTENANCE",
+                    "error": f"HTTP {e.code} Bad Gateway / Origin Server Offline",
+                    "message": "The upstream FreeFire backend server is temporarily down or undergoing maintenance. Please wait 60 seconds and try again.",
+                    "retryable": True,
+                    "retry_after": 60
+                }, indent=2).encode('utf-8')
+                self.wfile.write(custom_err)
+                return
+
             self.send_response(e.code)
             self.send_header("Content-Type", "application/json; charset=utf-8")
             self._send_cors_headers()
             self.end_headers()
-            self.wfile.write(sanitize_response(err_data if err_data else json.dumps({"error": str(e)}).encode('utf-8')))
+            self.wfile.write(sanitize_response(err_bytes if err_bytes else json.dumps({"error": str(e)}).encode('utf-8')))
         except Exception as primary_error:
             # Fallback to direct IP route if DNS fails
             try:
@@ -270,17 +286,22 @@ class ProxyHandler(BaseHTTPRequestHandler):
                     self.end_headers()
                     self.wfile.write(sanitize_response(resp_data))
             except Exception as fallback_error:
-                self.send_response(500)
+                self.send_response(502)
                 self.send_header("Content-Type", "application/json; charset=utf-8")
                 self._send_cors_headers()
                 self.end_headers()
-                self.wfile.write(sanitize_response(json.dumps({"error": str(primary_error), "fallback_error": str(fallback_error)}).encode('utf-8')))
+                self.wfile.write(sanitize_response(json.dumps({
+                    "status": "UPSTREAM_SERVER_MAINTENANCE",
+                    "error": "HTTP 502 Bad Gateway",
+                    "message": "The upstream FreeFire backend server is temporarily down or undergoing maintenance. Please wait 60 seconds and try again.",
+                    "retryable": True
+                }, indent=2).encode('utf-8')))
 
 def run_server():
     server_address = ('', PORT)
     httpd = ThreadingHTTPServer(server_address, ProxyHandler)
     print(f"🚀 BindTools High-Speed Proxy Server running on http://127.0.0.1:{PORT}")
-    print(f"🔑 Fixed Absolute Key Expiration Active")
+    print(f"🔑 Fixed Absolute Key Expiration & 502 Gateway Handler Active")
     httpd.serve_forever()
 
 if __name__ == "__main__":
